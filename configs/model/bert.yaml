@@ -1,0 +1,3 @@
+_target_: src.models.bert_module.BertModule
+lr: 0.0005
+weight_decay: 0.0005

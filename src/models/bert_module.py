@@ -91,12 +91,16 @@ class BertModule(LightningModule):
         self.log("val/loss", loss, on_step=False, on_epoch=True, prog_bar=False)
         self.log("val/acc", acc, on_step=False, on_epoch=True, prog_bar=True)
 
-        return {"loss": loss, "preds": preds, "targets": targets}
+        return {"loss": loss, "preds": preds, "targets": targets, "batch": batch[0]["input_ids"]}
 
     def validation_epoch_end(self, outputs: List[Any]):
         acc = self.val_acc.compute()  # get val accuracy from current epoch
         self.val_acc_best.update(acc)
         self.log("val/acc_best", self.val_acc_best.compute(), on_epoch=True, prog_bar=True)
+
+        text = self.trainer.datamodule.tokenizer.batch_decode(outputs[0]["batch"],skip_special_tokens=True)
+        data = [list(x) for x in list(zip(text, outputs[0]["preds"].tolist(), outputs[0]["targets"].tolist()))]
+        self.logger.log_table(key="val/preds",columns=["text", "prediction", "truth"], data=data)
 
     def test_step(self, batch: Any, batch_idx: int):
         loss, preds, targets = self.step(batch)
