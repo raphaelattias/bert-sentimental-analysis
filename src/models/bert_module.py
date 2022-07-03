@@ -77,7 +77,7 @@ class BertModule(LightningModule):
         # we can return here dict with any tensors
         # and then read it in some callback or in `training_epoch_end()` below
         # remember to always return loss from `training_step()` or else backpropagation will fail!
-        return {"loss": loss, "preds": preds, "targets": targets}
+        return {"loss": loss, "preds": preds, "targets": targets, "batch": batch[0]["input_ids"]}
 
     def training_epoch_end(self, outputs: List[Any]):
         # `outputs` is a list of dicts returned from `training_step()`
