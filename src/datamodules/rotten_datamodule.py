@@ -75,7 +75,7 @@ class RottenDataModule(LightningDataModule):
         # load datasets only if they're not loaded already
         if not self.data_train and not self.data_val and not self.data_test:
             self.data_train = self.rotten_tomatoes['train']
-            self.data_set = self.rotten_tomatoes['test']
+            self.data_set = self.rotten_tomatoes['validation']
             self.data_val = self.rotten_tomatoes['validation']
 
     def collate_tokenize(self, data):
