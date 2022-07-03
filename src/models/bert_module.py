@@ -81,7 +81,9 @@ class BertModule(LightningModule):
 
     def training_epoch_end(self, outputs: List[Any]):
         # `outputs` is a list of dicts returned from `training_step()`
-        pass
+        text = self.trainer.datamodule.tokenizer.batch_decode(outputs[0]["batch"],skip_special_tokens=True)
+        data = [list(x) for x in list(zip(text, outputs[0]["preds"].tolist(), outputs[0]["targets"].tolist()))]
+        self.logger.log_table(key="train/preds",columns=["text", "prediction", "truth"], data=data, step=self.current_epoch)
 
     def validation_step(self, batch: Any, batch_idx: int):
         loss, preds, targets = self.step(batch)
@@ -98,9 +100,6 @@ class BertModule(LightningModule):
         self.val_acc_best.update(acc)
         self.log("val/acc_best", self.val_acc_best.compute(), on_epoch=True, prog_bar=True)
 
-        text = self.trainer.datamodule.tokenizer.batch_decode(outputs[0]["batch"],skip_special_tokens=True)
-        data = [list(x) for x in list(zip(text, outputs[0]["preds"].tolist(), outputs[0]["targets"].tolist()))]
-        self.logger.log_table(key="val/preds",columns=["text", "prediction", "truth"], data=data)
 
     def test_step(self, batch: Any, batch_idx: int):
         loss, preds, targets = self.step(batch)

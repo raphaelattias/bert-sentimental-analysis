@@ -1,9 +1,9 @@
 program: train.py
 
-project: lightning-hydra-template
+project: bert-sentiment-analysis
 method: bayes
 
-description: "MNIST wandb sweep"
+description: "Bert sweep"
 
 metric:
   name: val/acc
@@ -15,7 +15,11 @@ parameters:
     min: 0.00001
     max: 0.001
   datamodule.batch_size:
-    values: [32]
+    values: [8,16,32]
+  model.weight_decay:
+    distribution: uniform
+    min: 0.0001
+    max: 0.001
 
 early_terminate:
   type: hyperband
