@@ -81,9 +81,7 @@ class BertModule(LightningModule):
 
     def training_epoch_end(self, outputs: List[Any]):
         # `outputs` is a list of dicts returned from `training_step()`
-        text = self.trainer.datamodule.tokenizer.batch_decode(outputs[0]["batch"],skip_special_tokens=True)
-        data = [list(x) for x in list(zip(text, outputs[0]["preds"].tolist(), outputs[0]["targets"].tolist()))]
-        self.logger.log_table(key="train/preds",columns=["text", "prediction", "truth"], data=data, step=self.current_epoch)
+        self.log_table(outputs[0],"train/preds")
 
     def validation_step(self, batch: Any, batch_idx: int):
         loss, preds, targets = self.step(batch)
@@ -99,7 +97,7 @@ class BertModule(LightningModule):
         acc = self.val_acc.compute()  # get val accuracy from current epoch
         self.val_acc_best.update(acc)
         self.log("val/acc_best", self.val_acc_best.compute(), on_epoch=True, prog_bar=True)
-
+        self.log_table(outputs[0],"val/preds")
 
     def test_step(self, batch: Any, batch_idx: int):
         loss, preds, targets = self.step(batch)
@@ -130,3 +128,8 @@ class BertModule(LightningModule):
         return torch.optim.Adam(
             params=self.parameters(), lr=self.hparams.lr, weight_decay=self.hparams.weight_decay
         )
+
+    def log_table(self, input_ids: List[Any], key: str):
+        text = self.trainer.datamodule.tokenizer.batch_decode(input_ids["batch"],skip_special_tokens=True)
+        data = [list(x) for x in list(zip(text, input_ids["preds"].tolist(), input_ids["targets"].tolist()))]
+        self.logger.log_table(key=key,columns=["text", "prediction", "truth"], data=data, step=self.current_epoch)

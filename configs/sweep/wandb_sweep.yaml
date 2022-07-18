@@ -13,13 +13,13 @@ parameters:
   model.lr:
     distribution: uniform
     min: 0.00001
-    max: 0.001
+    max: 0.0005
   datamodule.batch_size:
-    values: [8,16,32]
+    values: [16]
   model.weight_decay:
     distribution: uniform
     min: 0.0001
-    max: 0.001
+    max: 0.01
 
 early_terminate:
   type: hyperband

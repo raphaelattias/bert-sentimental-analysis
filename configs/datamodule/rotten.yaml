@@ -1,6 +1,6 @@
 _target_: src.datamodules.rotten_datamodule.RottenDataModule
 
 
-batch_size: 32
+batch_size: 16
 num_workers: 0
 pin_memory: False
