@@ -82,6 +82,7 @@ class RottenDataModule(LightningDataModule):
         text_batch = [element["text"] for element in data]
         label_batch = torch.Tensor([element["label"] for element in data]).int()
         tokenized = self.tokenizer(text_batch, padding='longest', truncation=True, return_tensors='pt')
+
         return tokenized, label_batch
 
     def train_dataloader(self):
